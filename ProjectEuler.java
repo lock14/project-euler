@@ -6,10 +6,11 @@ import java.util.stream.LongStream;
  * ProjectEuler
  */
 public class ProjectEuler {
+    
     public static void main(String[] args) {
         // time(ProjectEuler::summationOfPrimes);
-        time(() -> System.out.println(primes().parallel().takeWhile(p -> p < 2000000L).sum()));
-        time(() -> System.out.println(sieve(2000000).sum()));
+        // time(() -> System.out.println(primes().parallel().takeWhile(p -> p < Integer.MAX_VALUE - 1).sum()));
+        time(() -> System.out.println(sieve(Integer.MAX_VALUE >> 2).sum()));
     }
 
     /**
@@ -105,14 +106,16 @@ public class ProjectEuler {
                                    .sum());
     }
     
-    public static IntStream sieve(int limit) {
-        BitSet sieve = new BitSet(limit+1);
-        return IntStream.rangeClosed(2, limit)
-                  .filter(x -> !sieve.get(x))
-                  .peek(x -> {
-                      if (x*x < limit)
-                        for(int i = x; i <= limit; i+=x)
-                           sieve.set(i);
+    public static LongStream sieve(int limit) {
+        BitSet sieve = new BitSet(limit + 1);
+        return LongStream.rangeClosed(2, limit)
+                         .filter(x -> !sieve.get((int) x))
+                         .peek(x -> {
+                             if (x * x < limit) {
+                                 for(int i = (int) x; i <= limit; i += x) {
+                                     sieve.set(i);
+                                 }
+                             }
                    });
     }
 
@@ -154,16 +157,16 @@ public class ProjectEuler {
         return n == m;
     }
 
-    public static void time(Procedure p) {
+    public static void time(Procedure procedure) {
         // run the algorithm and time it
         long start = System.currentTimeMillis();
-        p.invoke();
+        procedure.execute();
         double elapsed = (System.currentTimeMillis() - start) / 1000.0;
         System.out.println(String.format("procedure took %.2f seconds", elapsed));
     }
 
     @FunctionalInterface
     public interface Procedure {
-        void invoke();
+        void execute();
     }
 }
